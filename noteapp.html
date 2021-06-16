@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.0.1/marked.min.js"></script>
+	<title>Document</title>
+	<style>
+		@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
+		*{
+			box-sizing: border-box;
+		}
+		body{
+			background: lightblue;
+			font-family: 'Roboto', sans-serif;
+			margin: 0;
+			display: flex;
+			flex-wrap: wrap;
+			padding-top: 3rem;
+			width:100%;
+
+		}
+		.add{
+			background:#9ec862;
+			margin: 3rem auto;
+			color: white;
+			border: 0;
+			border-radius: 3px;
+			padding:0.5rem 1rem ;
+			position: fixed;
+			top: 0rem;
+			right: 0rem;
+			cursor: pointer;
+
+
+		}
+		.note{
+			width: 300px;
+			height: 400px;
+			background: white;
+			margin: 20px;
+			box-shadow: 0 0 10px 4px rgba(0, 0, 0, 0.1);
+			padding-bottom: 2rem;
+		}
+		.note .tools{
+			background: lightgreen;
+			display: flex;
+			justify-content: flex-end;
+			padding: 0.5rem;
+		}
+		.note .tools button{
+			background: transparent;
+			border: none;
+			color: white;
+			font-size: 3rem;
+			margin-left: 0.5rem;
+			cursor: pointer;
+		}
+		.note .main{
+			background: white;
+			width: 100%;
+			height: 400px;
+			overflow: hidden;
+		}
+		.note textarea{
+			outline: none;
+			width: 100%;
+			height: 300px;
+			border: none;
+			font-family: inherit;
+			font-size: 1.2rem;
+			overflow: hidden;
+		}
+		.note .hidden{
+			display: none;
+		}
+
+	</style>
+</head>
+<body>
+	
+			
+			<button class="add" id="add"><i class="fas fa-plus"></i>Add note</button>
+			
+		
+	</div>
+
+	<script>
+		const addbtn = document.getElementById('add');
+		const notes = JSON.parse(localStorage.getItem('notes'));
+		if(notes){
+			notes.forEach(note =>{
+				addNewNote(note);
+			})
+		}
+
+		addbtn.addEventListener('click',()=>{
+			addNewNote();
+		});
+		function addNewNote(text = ""){
+			const note = document.createElement('div');
+			note.classList.add('note');
+			note.innerHTML = `
+			<div class="notes">
+		<div class="tools">
+			<button class="edit"><i class="fas fa-edit"></i></button>
+			<button class="delete"><i class="fas fa-trash-alt"></i></button>
+
+			</div>
+			<div class="main ${text ? " ":"hidden"}"></div>
+				<textarea class="${text ? "hidden":""}"></textarea> `;
+
+			
+
+			const editbtn = note.querySelector('.edit');
+		const deletebtn = note.querySelector('.delete');
+		const noteEl = note.querySelector('.notes');
+		const main = note.querySelector('.main');
+		const textArea = note.querySelector('textarea');
+
+		textArea.value = text;
+		textArea.innerHTML = marked(text);
+
+
+		editbtn.addEventListener('click',()=>{
+			main.classList.toggle('hidden');
+			textArea.classList.toggle('hidden');
+		});
+        deletebtn.addEventListener('click',()=>{
+        	note.remove();
+        	updateLS();
+        });
+
+		textArea.addEventListener('input',(e)=>{
+             const { value } = e.target;
+             main.innerHTML = marked(value);
+
+             updateLS();
+		});
+
+			document.body.appendChild(note);
+		}
+
+		function updateLS(){
+			const notesText = document.querySelectorAll('textarea');
+			const notes = [];
+			notesText.forEach(note =>{
+				notes.push(note.value);
+			});
+			localStorage.setItem('notes',JSON.stringify(notes));
+		}
+
+		
+	</script>
+</body>
+</html>
